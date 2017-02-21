@@ -1,0 +1,75 @@
+These scripts simplify bringing up buildbot worker and master nodes.
+
+They rely on various config data placed in json files in a "~/secrets"
+directory.
+
+The files:
+~/secrets/public.json:
+{
+    "admin_email": "...",
+    "master_host": "...",
+    "github_organization": "...",
+    "github_repo": "...",
+    "github_trusted_users": [
+        "user1", "user2", ...
+    ]
+}
+
+Most of these are self-explanatory. The "github_trusted_users" key tells
+buildbot whose pull requests to allow workers to build and test (otherwise,
+anyone could take over a worker account by submitting a pull request).
+
+
+~/secrets/[ubuntu|freebsd]_bb_secrets.json:
+{
+  "bb_un": "...",
+  "bb_pw": "..."
+}
+
+
+~/secrets/[ubuntu|freebsd|master]_unix_secrets.json:
+{
+  "unix_un": "...",
+  "unix_pw": "..."
+}
+
+These give the unix accounts on the worker machines that the various services run as.
+
+
+~/secrets/master_bb_secrets.json:
+{
+  "github_access_token": "..."
+}
+
+github_access_token is used to set build status on pull requests (and so knows
+that capability to be granted on github's side).
+
+
+
+To set up the master (currently, only ubuntu master is supported):
+(as root)
+cd ubuntu-master
+./setup-system.sh
+./setup-nginx.sh
+./setup-bb-master-account.sh
+(after becoming master, and changing to the master's home directory, with a
+checkout of jemalloc-ci):
+./setup-bb-master.sh
+./start-bb-master.sh
+
+To set up the worker (currently, only ubuntu and freebsd are supported):
+(as root)
+./setup-[ubuntu|freebsd]-worker-system.sh
+WORKER_UNIX_SECRETS_FILE=[ubuntu|freebsd]_unix_secrets.json ./setup-worker-account.sh
+(after su-ing to the worker, in the worker's checkout of jemalloc-ci):
+./setup-bb-worker.sh
+./start-bb-worker.sh
+
+To set up a master, root's secrets directory must include
+master_unix_secrets.json and public.json. The master account's secrets
+directory must include public.json, [freebsd|ubuntu]_bb_secrets.json, and
+master_bb_secrets.json.
+
+To set up a worker, root's secrets directory must include
+[freebsd|ubuntu]_unix_secrets.json. The worker account's secrets directory must
+include [freebsd|ubuntu]_bb_secrets.json and public.json.
