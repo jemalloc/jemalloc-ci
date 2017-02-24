@@ -17,6 +17,7 @@
 # Grabbed from https://github.com/buildbot/buildbot/pull/2585, mid-review. The
 # only changes here a few bug fixes that are pending there.
 
+
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -64,11 +65,11 @@ class GitHubPullrequestPoller(base.ReconfigurablePollingChangeSource,
                     project='',
                     pullrequest_filter=True,
                     token=None,
-                    repository_link="https",
+                    repository_type="https",
                     **kwargs):
-        if repository_link not in ["https", "svn", "git", "ssh"]:
+        if repository_type not in ["https", "svn", "git", "ssh"]:
             config.error(
-                "repository_link must be one of {https, svn, git, ssh}")
+                "repository_type must be one of {https, svn, git, ssh}")
         base.ReconfigurablePollingChangeSource.checkConfig(
             self, name=self.name, **kwargs)
 
@@ -84,7 +85,7 @@ class GitHubPullrequestPoller(base.ReconfigurablePollingChangeSource,
                         pullrequest_filter=True,
                         token=None,
                         pollAtLaunch=False,
-                        repository_link="https",
+                        repository_type="https",
                         **kwargs):
         yield base.ReconfigurablePollingChangeSource.reconfigService(
             self, name=self.name, **kwargs)
@@ -101,16 +102,13 @@ class GitHubPullrequestPoller(base.ReconfigurablePollingChangeSource,
         self._http = yield httpclientservice.HTTPClientService.getService(
             self.master, baseURL, headers=http_headers)
 
-        if not branches:
-            branches = ['master']
-
         self.token = token
         self.owner = owner
         self.repo = repo
         self.branches = branches
         self.project = project
         self.pollInterval = pollInterval
-        self.repository_link = link_urls[repository_link]
+        self.repository_type = link_urls[repository_type]
 
         if callable(pullrequest_filter):
             self.pullrequest_filter = pullrequest_filter
@@ -184,7 +182,7 @@ class GitHubPullrequestPoller(base.ReconfigurablePollingChangeSource,
             revision = pr['head']['sha']
 
             # Check to see if the branch is set or matches
-            if base_branch not in self.branches:
+            if self.branches is not None and base_branch not in self.branches:
                 continue
             if (self.pullrequest_filter is not None and
                     not self.pullrequest_filter(pr)):
@@ -194,7 +192,7 @@ class GitHubPullrequestPoller(base.ReconfigurablePollingChangeSource,
                 # Access title, repo, html link, and comments
                 branch = pr['head']['ref']
                 title = pr['title']
-                repo = pr['head']['repo'][self.repository_link]
+                repo = pr['head']['repo'][self.repository_type]
                 revlink = pr['html_url']
                 comments = pr['body']
                 updated = datetime.strptime(pr['updated_at'],
