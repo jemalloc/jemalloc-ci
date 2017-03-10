@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
 
 if [[ -z $WORKER_BB_SECRETS_FILE ]]; then
   echo "Need WORKER_BB_SECRETS_FILE=[ubuntu|freebsd]_bb_secrets.json defined!"

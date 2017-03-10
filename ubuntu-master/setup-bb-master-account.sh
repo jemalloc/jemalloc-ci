@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
 
-source "$SCRIPT_DIR/../bash_fns/detect_os.sh"
-source "$SCRIPT_DIR/../bash_fns/mkuser.sh"
+source "$ROOT_DIR/bash_fns/detect_os.sh"
+source "$ROOT_DIR/bash_fns/mkuser.sh"
 
 UNIX_UN=`jq --raw-output '.["unix_un"]' ~/secrets/master_unix_secrets.json`
 UNIX_PW=`jq --raw-output '.["unix_pw"]' ~/secrets/master_unix_secrets.json`

@@ -1,4 +1,4 @@
-source "$SCRIPT_DIR/bash_fns/detect_os.sh"
+source "$ROOT_DIR/bash_fns/detect_os.sh"
 
 function mkuser() {
   local UN="$1"

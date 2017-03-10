@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
 
 MASTER_HOST=`jq --raw-output '.["master_host"]' ~/secrets/public.json`
 ADMIN_EMAIL=`jq --raw-output '.["admin_email"]' ~/secrets/public.json`
@@ -11,9 +11,9 @@ if [[ -z $MASTER_HOST || -z $ADMIN_EMAIL ]]; then
 fi
 
 # Get our configuration files where we want them.
-cp "$SCRIPT_DIR/../nginx/master.nginx.conf" /etc/nginx/sites-available/master
-cp "$SCRIPT_DIR/../nginx/master-bootstrap.nginx.conf" /etc/nginx/sites-available/master-bootstrap
-cp "$SCRIPT_DIR/../nginx/ssl-params.nginx.conf" /etc/nginx/snippets/ssl-params.conf
+cp "$ROOT_DIR/nginx/master.nginx.conf" /etc/nginx/sites-available/master
+cp "$ROOT_DIR/nginx/master-bootstrap.nginx.conf" /etc/nginx/sites-available/master-bootstrap
+cp "$ROOT_DIR/nginx/ssl-params.nginx.conf" /etc/nginx/snippets/ssl-params.conf
 
 
 # Rewrite the configuration files to use whatever hostname we're configured for.

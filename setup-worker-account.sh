@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 set -e
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)
 
-source "$SCRIPT_DIR/bash_fns/mkuser.sh"
+source "$ROOT_DIR/bash_fns/mkuser.sh"
 
 if [[ -z $WORKER_UNIX_SECRETS_FILE ]]; then
   echo "Need WORKER_UNIX_SECRETS_FILE=[ubuntu|freebsd]_unix_secrets.json defined!"
